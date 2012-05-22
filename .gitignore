@@ -1,0 +1,4 @@
+/node_modules/*
+/mongoose/*
+/socket.io/*
+options.js

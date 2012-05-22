@@ -1,0 +1,12 @@
+{
+    "name": "twitdash"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "express": "2.5.8"
+    , "jade": ">= 0.0.1"
+    , "mongoose": ">= 2.5.12"
+    , "ntwitter" ">= 0.3.0"
+    , "socket.io" ">=1.1.12"
+  }
+}

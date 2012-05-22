@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Twitter Visualizations and More</title>
+    <script type="text/javascript" src="/javascripts/lib/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/javascripts/lib/underscore-min.js"></script>
+    <script type="text/javascript" src="/javascripts/lib/backbone.js"></script>
+    <link rel="stylesheet" href= "/stylesheets/style.css"></link>
+</head>
+
+<body>
+    <div id="twitdash">
+            <div id="header">
+                <h1 id="main-title">Your Twitter Dashboard to the Stars</h1>
+        </div>
+
+        <div id="sidebar">
+            <p>Hi Everybody!</p>
+        </div>
+
+        <div id="primary-content">
+
+            <div id="search-input">
+                <form id="search-form">
+                    <input id="search-field" type="text" placeholder="Search for a Twitter user" />
+                    <input type="submit" id="searchSubmit" value="Get Convos" />
+                </form>
+            </div>
+
+            <div id="convo-box">
+                <div id="convo-header"></div>
+            </div>
+
+        <div id="footer"></div>
+    </div>
+
+    <script type="text/template" id="tweet-tmpl">
+        <div class="tweet">
+
+        </div>
+    </script>
+    
+    <script type="text/template" id="user-tmpl">
+        <div class="user">
+
+        </div>
+    </script>
+
+    <script type="text/template" id="tweets-tmpl">
+        <div class="tweets">
+
+        </div>
+    </script>
+
+    <script type="text/template" id="users-tmpl">
+        <div class="users">
+
+        </div>
+    </script>
+
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/javascripts/models.js"></script>
+    <script type="text/javascript" src="/javascripts/index.js"></script>
+</body>
+</html>
