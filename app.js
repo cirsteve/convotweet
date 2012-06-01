@@ -53,7 +53,10 @@ io.sockets.on('connection', function (socket) {
     socket.on('getSearch', function(terms) {
         console.log('getSearch called');
         var twitter = new Twitter(options);
-        twitter.search('to:'+terms.term, {include_entities:true, rpp:100}, function(err, tweets) {
+        twitter.search('to:'+terms.term+' until:2012-05-24', {include_entities:true, rpp:100}, function(err, tweets) {
+            socket.emit('new-tweets',  tweets);
+        });
+        twitter.search('from:'+terms.term, {include_entities:true, rpp:100}, function(err, tweets) {
             socket.emit('new-tweets',  tweets);
         });
     });

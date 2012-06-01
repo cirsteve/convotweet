@@ -15,7 +15,9 @@
         </div>
 
         <div id="sidebar">
-            <p>Hi Everybody!</p>
+            <ul id="convos-list">
+                <h4>Contwitsations?</h4>
+            </ul>
         </div>
 
         <div id="primary-content">
@@ -36,13 +38,16 @@
 
     <script type="text/template" id="tweet-tmpl">
         <div class="tweet">
+            <p><%= text %></p>
+            <p>Sent at <%= created %></p>
 
         </div>
     </script>
     
-    <script type="text/template" id="user-tmpl">
+    <script type="text/template" id="tweeter-tmpl">
         <div class="user">
-
+            <img src=<%= profileImage %> />
+            <h3><%= username %></h3>
         </div>
     </script>
 
@@ -52,10 +57,25 @@
         </div>
     </script>
 
-    <script type="text/template" id="users-tmpl">
+    <script type="text/template" id="tweeters-tmpl">
         <div class="users">
 
         </div>
+    </script>
+    
+    <script type="text/template" id="convo-tmpl">
+        <div class="convo">
+            <h2><%= primary %></h2>
+            <p><%= conversantCount %> Conversations</p>
+        </div>
+    </script>
+
+    <script type="text/template" id="convos-tmpl">
+        <ul class="convos">
+            <h4>Looks Whos Convertweeting!</h4>
+            
+
+        </ul>
     </script>
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
