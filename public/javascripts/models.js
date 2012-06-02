@@ -21,7 +21,7 @@ var Tweeter = Backbone.Model.extend({
         return {
             username: "nameless",
             id: null,
-            proileImage: null,
+            profileImage: null,
             primary: false
         };
     },
@@ -46,14 +46,22 @@ var Convo = Backbone.Model.extend({
         this.conversants = new Tweeters();
         this.tweets = new Tweets();
         console.log(this.tweets);
-        this.urlTo = 'http://search.twitter.com/search.json?callback=?&q=to%3A'+ this.primary; 
-        this.urlFrom = 'http://search.twitter.com/search.json?callback=?&q=from%3A'+ this.primary; 
+        this.urlTo = 'http://search.twitter.com/search.json?callback=?&rpp=100&q=to%3A'+ this.primary; 
+        this.urlFrom = 'http://search.twitter.com/search.json?callback=?&rpp=100&q=from%3A'+ this.primary; 
         this.getAllTweets();
         console.log(this.conversants);
         this.getConversantCount();
     },
     getConversantCount: function () {
         this.conversantCount = this.conversants.length;
+    },
+    addTweetView: function(model) {
+        var view = new TweetView({model:model});
+        $('#'+this.primary+'-convos').append(view.render().el);
+    },
+    addTweeterView: function(model) {
+        var view = new TweeterView({model:model});
+        $('#'+this.primary+'-info ul.conversants').append(view.render().el);
     },
     getAllTweets: function() {
         console.log(this.urlTo);
@@ -67,15 +75,28 @@ var Convo = Backbone.Model.extend({
             success: function(data) {
                 console.log(self.tweets);
                 data.results.forEach(function(t) {
-                    console.log(self.tweets);
-                    var t = new Tweet({user:t.from_user, id: t.from_user_id, entities:t.entities, geo:t.geo,text:t.text, to:t.to_user, created:t.created_at});
-                    self.tweets.add(t);
+                    console.log(t);
+                    var tweet = new Tweet({user:t.from_user,
+                                         id: t.from_user_id,
+                                   entities:t.entities,
+                                        geo:t.geo,
+                                       text:t.text,
+                                         to:t.to_user,
+                                    created:t.created_at
+                                });
+                    self.tweets.add(tweet);
                     console.log(self.tweets.length);
-                    var view = new TweetView({model:t});
-                    $('#'+self.primary+'tweets').append(view.render().el);
-                    console.log(self.tweets);
-                    var u = new Tweeter({username:t.from_user, id: t.from_user_id, profile_image: t.profile_image_url});
-                    self.conversants.noDupeAdd(u);            
+                    self.addTweetView(tweet);
+                    console.log(t.user);
+                    var u = new Tweeter({username:t.from_user,
+                                               id: t.from_user_id,
+                                     profileImage: t.profile_image_url
+                                });
+                    console.log(u);
+                    var addUser = self.conversants.noDupeAdd(u);            
+                    if (addUser) {
+                        self.addTweeterView(u);
+                    }
                     console.log(self.conversants);
                 });
                 self.getConversantCount();
@@ -89,8 +110,14 @@ var Convo = Backbone.Model.extend({
             },
             success: function(data) {
                 data.results.forEach(function(t) {
-                    var t = new Tweet({user:t.from_user, id: t.from_user_id, entities:t.entities, geo:t.geo,text:t.text, to:t.to_user, created:t.created_at});
+                    var t = new Tweet({user:t.from_user,
+                                         id: t.from_user_id,
+                                   entities:t.entities,
+                                        geo:t.geo,text:t.text,
+                                         to:t.to_user,
+                                    created:t.created_at});
                     self.tweets.add(t);
+                    self.addTweetView(t);
                 });
             }
         }); 
@@ -103,20 +130,6 @@ var Convos = Backbone.Collection.extend({
 
 var Tweets = Backbone.Collection.extend({
     model: Tweet,
-    getTweets: function(primary) {
-        var fromURL, fromURLOvr, atURL, atURLOvr;
-        $.ajax({
-            url: 'http://twitter.com/search?q=to:louisck',
-            success: function(data) {
-                data.results.forEach(function(t) {
-            var t = new Tweet({user:twts[i].from_user, id: twts[i].from_user_id, entities:twts[i].entities, geo:twts[i].geo,text:twts[i].text, to:twts[i].to_user, created:twts[i].created_at});
-            tweetList.add(t);
-            var u = new Tweeter({username:twts[i].from_user, id: twts[i].from_user_id, profile_image: twts[i].profile_image_url});
-            tweeterList.noDupeAdd(u);            
-                });
-            }
-        });
-    }
 });
 
 var Tweeters = Backbone.Collection.extend({
@@ -127,7 +140,9 @@ var Tweeters = Backbone.Collection.extend({
             });
         if (!t) {
             this.add(tweeterInstance);
+            return true;
         }
+        return false;
     }
 });
 
@@ -140,17 +155,6 @@ var TweetView = Backbone.View.extend({
     render: function () {
         this.$el.html(this.template(this.model.toJSON()));
         return this;
-    }
-});
-
-var TweetsView = Backbone.View.extend({
-    tag_name: "ul",
-    initialize: function() {
-        this.render();
-    },
-    render: function () {
-        var template =  _.template($('#tweets-tmpl').html(), {});
-        this.el.html(template);
     }
 });
 
@@ -181,7 +185,7 @@ var ConvoView = Backbone.View.extend({
 var AppView = Backbone.View.extend({
     el: $("#twitdash"),
     events: {
-        "click #searchSubmit": "getConvo"
+        "click #searchSubmit": "addConvo"
     },
     initialize: function() {
         this.convos = new Convos();
@@ -189,7 +193,7 @@ var AppView = Backbone.View.extend({
     },
     render: function() {
     },
-    getConvo: function (e) {
+    addConvo: function (e) {
         console.log('getConvo called');
         e.preventDefault();
         var search = $('#search-field');
@@ -198,8 +202,8 @@ var AppView = Backbone.View.extend({
         search.val('');
         var ul = $('<ul></ul>')
                   .attr('id', term+'-convos');
-        $('#convo-box').append(ul);
         console.log(ul);
+        $('#convo-box').append(ul);
         var convo = new Convo({primary:term});
         this.convos.add(convo);
         var view = new ConvoView({model:convo});
